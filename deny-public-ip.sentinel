@@ -1,0 +1,10 @@
+import "tfplan/v2" as tfplan
+
+public_ips = filter tfplan.resource_changes as _, rc {
+  rc.type is "azurerm_public_ip" and
+  rc.change.actions contains "create"
+}
+
+main = rule {
+  length(public_ips) is 0
+}
