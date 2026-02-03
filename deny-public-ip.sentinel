@@ -1,10 +1,12 @@
 import "tfplan/v2" as tfplan
 
-public_ips = filter tfplan.resource_changes as _, rc {
-  rc.type is "azurerm_public_ip" and
-  rc.change.actions contains "create"
+# Find all public IP resources being created
+public_ip_creates = filter tfplan.resource_changes as _, rc {
+  rc.type == "azurerm_public_ip" and
+  "create" in rc.change.actions
 }
 
+# Deny if any public IP is created
 main = rule {
-  length(public_ips) is 0
+  length(public_ip_creates) == 0
 }
